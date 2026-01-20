@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.model.ConsumerGroup;
 
 /**
@@ -46,7 +46,7 @@ public class PartitionRouter {
         }
 
         Map<Integer, Integer> cleared = new HashMap<>(partitionDistribution);
-        cleared.replaceAll((k, v) -> (clientId == v) ? null : v);
+        cleared.replaceAll((k, v) -> (clientId == v) ? ConsumerGroupDao.FREE_PARTITION_DEFAULT_CLIENT_ID : v);
         Map<Integer, Integer> rebalancedPartitionDistribution = rebalanceExisting(cleared);
 
         consumerGroup.setClients(rebalancedPartitionDistribution);
@@ -63,7 +63,7 @@ public class PartitionRouter {
 
     private int generateClientId(Map<Integer, Integer> partitionDistribution) {
         Set<Integer> used = partitionDistribution.values().stream()
-                .filter(Objects::nonNull).collect(Collectors.toSet());
+                .filter(it -> !it.equals(ConsumerGroupDao.FREE_PARTITION_DEFAULT_CLIENT_ID)).collect(Collectors.toSet());
 
         int maxIdExclusive = Math.max(used.size() + 2, 100);
 
@@ -109,7 +109,7 @@ public class PartitionRouter {
 
     private Map<Integer, Integer> rebalanceExisting(Map<Integer, Integer> partitionDistribution) {
         List<Integer> clients = partitionDistribution.values().stream()
-                .filter(Objects::nonNull)
+                .filter(it -> !it.equals(ConsumerGroupDao.FREE_PARTITION_DEFAULT_CLIENT_ID))
                 .distinct()
                 .toList();
 
@@ -122,7 +122,8 @@ public class PartitionRouter {
 
     private List<Integer> getUniqueClients(Map<Integer, Integer> partitionDistribution, int clientId) {
         Set<Integer> clients = partitionDistribution.values().stream()
-                .filter(Objects::nonNull).collect(Collectors.toCollection(LinkedHashSet::new));
+                .filter(it -> !it.equals(ConsumerGroupDao.FREE_PARTITION_DEFAULT_CLIENT_ID))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         clients.add(clientId);
         return new ArrayList<>(clients);
     }

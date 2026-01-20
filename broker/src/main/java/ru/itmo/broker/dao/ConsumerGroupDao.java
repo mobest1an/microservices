@@ -19,13 +19,15 @@ import ru.itmo.broker.model.Topic;
 @RequiredArgsConstructor
 public class ConsumerGroupDao {
 
+    public static int FREE_PARTITION_DEFAULT_CLIENT_ID = -1;
+
     private final ConsumerGroupRepository consumerGroupRepository;
     private final TopicRepository topicRepository;
 
     public ConsumerGroup create(String groupId, Topic topic) {
         Map<Integer, Integer> clients = new HashMap<>(topic.getPartitionCount());
         for (int i = 0; i < topic.getPartitionCount(); i++) {
-            clients.put(i, null);
+            clients.put(i, FREE_PARTITION_DEFAULT_CLIENT_ID);
         }
         ConsumerGroup consumerGroup = new ConsumerGroup(groupId, topic, clients);
         consumerGroupRepository.save(consumerGroup);

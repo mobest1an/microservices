@@ -1,8 +1,6 @@
 package ru.itmo.broker.model;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -13,8 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,6 +36,6 @@ public class ConsumerGroup {
             joinColumns = @JoinColumn(name = "group_id")
     )
     @MapKeyColumn(name = "partition")
-    @Column(name = "cliend_id")
+    @Column(name = "cliend_id", nullable = false)
     private Map<Integer, Integer> clients;
 }

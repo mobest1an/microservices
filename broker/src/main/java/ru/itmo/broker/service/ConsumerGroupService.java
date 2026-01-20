@@ -23,13 +23,13 @@ public class ConsumerGroupService {
     public ConsumerGroupDto join(String groupId, String topic) {
         ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
         int clientId = partitionRouter.joinConsumerGroup(consumerGroup);
-        return ConsumerGroupDto.fromModel(consumerGroup, clientId);
+        return ConsumerGroupDto.fromModel(consumerGroupDao.save(consumerGroup), clientId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ConsumerGroupDto leave(String groupId, String topic, int clientId) {
         ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
         partitionRouter.leaveConsumerGroup(consumerGroup, clientId);
-        return ConsumerGroupDto.fromModel(consumerGroup, clientId);
+        return ConsumerGroupDto.fromModel(consumerGroupDao.save(consumerGroup), clientId);
     }
 }
