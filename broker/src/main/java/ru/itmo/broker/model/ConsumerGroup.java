@@ -38,7 +38,7 @@ public class ConsumerGroup {
             joinColumns = @JoinColumn(name = "group_id")
     )
     @MapKeyColumn(name = "partition")
-    @Column(name = "cliend_id", nullable = false)
+    @Column(name = "client_id", nullable = false)
     private Map<Integer, Integer> clients;
 
     @ElementCollection(fetch = FetchType.EAGER)

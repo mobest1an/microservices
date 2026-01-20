@@ -45,6 +45,11 @@ public class ConsumerService {
         }
 
         Optional<Message> message = messageRepository.findByTopicAndPartitionAndMsgOffset(consumerGroup.getTopic(), partition, msgOffset);
+        if (message.isPresent()) {
+            clientOffsets.put(new ClientOffsetKey(clientId, partition), msgOffset + 1);
+            consumerGroup.setClientOffsets(clientOffsets);
+            consumerGroupDao.save(consumerGroup);
+        }
         return message.map(MessageDto::fromModel);
     }
 

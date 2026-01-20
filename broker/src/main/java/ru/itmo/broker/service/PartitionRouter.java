@@ -54,7 +54,7 @@ public class PartitionRouter {
     }
 
     public int getPartitionForProducer(Topic topic) {
-        List<Integer> partitions = IntStream.rangeClosed(1, topic.getPartitionCount())
+        List<Integer> partitions = IntStream.rangeClosed(0, topic.getPartitionCount() - 1)
                 .boxed()
                 .toList();
 
