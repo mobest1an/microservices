@@ -1,0 +1,47 @@
+package ru.itmo.broker.service.producer;
+
+import java.util.UUID;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import ru.itmo.broker.api.dto.requests.WriteMessageRequest;
+import ru.itmo.broker.dao.TopicDao;
+import ru.itmo.broker.dao.repository.MessageRepository;
+import ru.itmo.broker.model.Message;
+import ru.itmo.broker.model.Topic;
+import ru.itmo.broker.service.PartitionRouter;
+
+/**
+ * @author erik.karapetyan
+ */
+@Service
+@RequiredArgsConstructor
+public class ProducerService {
+
+    private final PartitionRouter partitionRouter;
+    private final TopicDao topicDao;
+    private final MessageRepository messageRepository;
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void writeMessage(String topicName, WriteMessageRequest request) {
+        Topic topic = topicDao.findById(topicName);
+        int partition = partitionRouter.getPartitionForProducer(topic);
+
+        long currentOffset = topic.getOffsets().get(partition) + 1;
+        topic.getOffsets().replace(partition, currentOffset);
+
+        Message message = new Message(
+                UUID.randomUUID(),
+                request.content(),
+                partition,
+                currentOffset,
+                false,
+                topic
+        );
+
+        topicDao.save(topic);
+        messageRepository.save(message);
+    }
+}

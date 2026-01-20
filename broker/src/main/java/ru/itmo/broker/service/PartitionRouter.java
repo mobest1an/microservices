@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.model.ConsumerGroup;
+import ru.itmo.broker.model.Topic;
 
 /**
  * @author erik.karapetyan
@@ -50,6 +51,14 @@ public class PartitionRouter {
         Map<Integer, Integer> rebalancedPartitionDistribution = rebalanceExisting(cleared);
 
         consumerGroup.setClients(rebalancedPartitionDistribution);
+    }
+
+    public int getPartitionForProducer(Topic topic) {
+        List<Integer> partitions = IntStream.rangeClosed(1, topic.getPartitionCount())
+                .boxed()
+                .toList();
+
+        return partitions.get(ThreadLocalRandom.current().nextInt(partitions.size()));
     }
 
     public Set<Integer> getPartitionsForClient(ConsumerGroup consumerGroup, int clientId) {

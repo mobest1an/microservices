@@ -29,9 +29,9 @@ public class ConsumerGroupDao {
         for (int i = 0; i < topic.getPartitionCount(); i++) {
             clients.put(i, FREE_PARTITION_DEFAULT_CLIENT_ID);
         }
+
         ConsumerGroup consumerGroup = new ConsumerGroup(groupId, topic, clients);
-        consumerGroupRepository.save(consumerGroup);
-        return consumerGroup;
+        return save(consumerGroup);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)

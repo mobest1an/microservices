@@ -12,16 +12,16 @@ public class ConsumerGroupDto {
     private final String groupId;
     private final String topicName;
     private final int partitionCount;
-    private final int clientId;
+    private final Integer clientId;
 
-    private ConsumerGroupDto(String groupId, String topicName, int partitionCount, int clientId) {
+    private ConsumerGroupDto(String groupId, String topicName, int partitionCount, Integer clientId) {
         this.groupId = groupId;
         this.topicName = topicName;
         this.partitionCount = partitionCount;
         this.clientId = clientId;
     }
 
-    public static ConsumerGroupDto fromModel(ConsumerGroup consumerGroup, int clientId) {
+    public static ConsumerGroupDto fromModel(ConsumerGroup consumerGroup, Integer clientId) {
         return new ConsumerGroupDto(
                 consumerGroup.getGroupId(),
                 consumerGroup.getTopic().getName(),

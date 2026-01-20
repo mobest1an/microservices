@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.broker.api.dto.responses.ConsumerGroupDto;
-import ru.itmo.broker.service.ConsumerGroupService;
+import ru.itmo.broker.service.consumer.ConsumerGroupService;
 
 /**
  * @author erik.karapetyan
@@ -15,9 +15,14 @@ import ru.itmo.broker.service.ConsumerGroupService;
 @RestController
 @RequestMapping("/api/v1/groups")
 @RequiredArgsConstructor
-public class ConsumerController {
+public class ConsumerGroupController {
 
     private final ConsumerGroupService consumerGroupService;
+
+    @PostMapping("/{groupId}")
+    public ConsumerGroupDto create(@PathVariable String groupId, @RequestParam("topic") String topic) {
+        return consumerGroupService.create(groupId, topic);
+    }
 
     @PostMapping("/{groupId}/join")
     public ConsumerGroupDto join(@PathVariable String groupId, @RequestParam("topic") String topic) {

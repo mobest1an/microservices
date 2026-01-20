@@ -26,6 +26,7 @@ public class ConsumerGroup {
 
     @Id
     private String groupId;
+
     @ManyToOne
     @JoinColumn(name = "topic_name", nullable = false)
     private Topic topic;
