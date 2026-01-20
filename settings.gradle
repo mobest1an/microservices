@@ -1,0 +1,5 @@
+rootProject.name = 'microservices'
+include 'broker'
+include 'consumer'
+include 'producer'
+

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: broker
+  jpa:
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:54320/microservices
+    username: ${POSTGRES_USER:microservices}
+    password: ${POSTGRES_PASSWORD:microservices}
+    driver-class-name: org.postgresql.Driver
