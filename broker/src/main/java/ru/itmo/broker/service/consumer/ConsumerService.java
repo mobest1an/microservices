@@ -1,5 +1,7 @@
 package ru.itmo.broker.service.consumer;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.broker.api.dto.responses.MessageDto;
 import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.dao.repository.MessageRepository;
+import ru.itmo.broker.model.ClientOffsetKey;
 import ru.itmo.broker.model.ConsumerGroup;
 import ru.itmo.broker.model.Message;
 import ru.itmo.broker.service.PartitionRouter;
@@ -26,15 +29,22 @@ public class ConsumerService {
     private final MessageRepository messageRepository;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Optional<MessageDto> readMessage(String topic, String groupId, int clientId, Long offset) {
+    public Optional<MessageDto> readMessage(String topic, String groupId, int clientId) {
         ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
         int partition = partitionRouter.getPartitionForClient(consumerGroup, clientId);
         long maxOffset = consumerGroup.getTopic().getOffsets().get(partition);
-        if (offset == null) {
-            offset = maxOffset;
+
+        Map<ClientOffsetKey, Long> clientOffsets = consumerGroup.getClientOffsets();
+        if (clientOffsets == null) {
+            clientOffsets = new HashMap<>();
         }
 
-        Optional<Message> message = messageRepository.findByTopicAndPartitionAndMsgOffset(consumerGroup.getTopic(), partition, offset);
+        Long msgOffset = clientOffsets.get(new ClientOffsetKey(clientId, partition));
+        if (msgOffset == null) {
+            msgOffset = maxOffset;
+        }
+
+        Optional<Message> message = messageRepository.findByTopicAndPartitionAndMsgOffset(consumerGroup.getTopic(), partition, msgOffset);
         return message.map(MessageDto::fromModel);
     }
 

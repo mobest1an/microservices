@@ -30,7 +30,7 @@ public class ConsumerGroupDao {
             clients.put(i, FREE_PARTITION_DEFAULT_CLIENT_ID);
         }
 
-        ConsumerGroup consumerGroup = new ConsumerGroup(groupId, topic, clients);
+        ConsumerGroup consumerGroup = new ConsumerGroup(groupId, topic, clients, Map.of());
         return save(consumerGroup);
     }
 

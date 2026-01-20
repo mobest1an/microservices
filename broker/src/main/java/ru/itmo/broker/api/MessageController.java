@@ -35,9 +35,8 @@ public class MessageController {
     public Optional<MessageDto> read(
             @RequestParam("topic") String topic,
             @RequestParam("groupId") String groupId,
-            @RequestParam("clientId") int clientId,
-            @RequestParam("offset") Long offset) {
-        return consumerService.readMessage(topic, groupId, clientId, offset);
+            @RequestParam("clientId") int clientId) {
+        return consumerService.readMessage(topic, groupId, clientId);
     }
 
     @PostMapping("/commit")

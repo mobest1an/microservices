@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyClass;
 import jakarta.persistence.MapKeyColumn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,4 +40,13 @@ public class ConsumerGroup {
     @MapKeyColumn(name = "partition")
     @Column(name = "cliend_id", nullable = false)
     private Map<Integer, Integer> clients;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "client_offsets",
+            joinColumns = @JoinColumn(name = "group_id")
+    )
+    @MapKeyClass(ClientOffsetKey.class)
+    @Column(name = "client_offset")
+    private Map<ClientOffsetKey, Long> clientOffsets;
 }
