@@ -23,6 +23,7 @@ public class ProducerService {
     private final PartitionRouter partitionRouter;
     private final TopicDao topicDao;
     private final MessageRepository messageRepository;
+    private final SyntaxChecker syntaxChecker;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void writeMessage(String topicName, WriteMessageRequest request) {
@@ -32,9 +33,11 @@ public class ProducerService {
         long currentOffset = topic.getOffsets().get(partition) + 1;
         topic.getOffsets().replace(partition, currentOffset);
 
+        String enrichedContent = syntaxChecker.enrich(request.content());
+
         Message message = new Message(
                 UUID.randomUUID(),
-                request.content(),
+                enrichedContent,
                 partition,
                 currentOffset,
                 false,
