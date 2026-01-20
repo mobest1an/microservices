@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itmo.broker.api.dto.responses.ConsumerGroupDto;
-import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.model.ConsumerGroup;
 
 /**
@@ -26,29 +24,25 @@ import ru.itmo.broker.model.ConsumerGroup;
 @RequiredArgsConstructor
 public class PartitionRouter {
 
-    private final ConsumerGroupDao consumerGroupDao;
-
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ConsumerGroupDto joinConsumerGroup(String groupId, String topic) {
-        ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
+    public int joinConsumerGroup(ConsumerGroup consumerGroup) {
         Map<Integer, Integer> partitionDistribution = consumerGroup.getClients();
 
         int clientId = generateClientId(partitionDistribution);
         Map<Integer, Integer> rebalancedPartitionDistribution = rebalance(partitionDistribution, clientId);
 
         consumerGroup.setClients(rebalancedPartitionDistribution);
-        return ConsumerGroupDto.fromModel(consumerGroupDao.save(consumerGroup), clientId);
+        return clientId;
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ConsumerGroupDto leaveConsumerGroup(String groupId, String topic, int clientId) {
-        ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
+    public void leaveConsumerGroup(ConsumerGroup consumerGroup, int clientId) {
         Map<Integer, Integer> partitionDistribution = consumerGroup.getClients();
 
         boolean clientExists = partitionDistribution.containsValue(clientId);
         if (!clientExists) {
             throw new IllegalArgumentException(
-                    "Client id " + clientId + " is not a member of group [" + groupId + "/" + topic + "]");
+                    "Client id " + clientId + " is not a member of group [" + consumerGroup.getGroupId() + "/" + consumerGroup.getTopic().getName() + "]");
         }
 
         Map<Integer, Integer> cleared = new HashMap<>(partitionDistribution);
@@ -56,11 +50,9 @@ public class PartitionRouter {
         Map<Integer, Integer> rebalancedPartitionDistribution = rebalanceExisting(cleared);
 
         consumerGroup.setClients(rebalancedPartitionDistribution);
-        return ConsumerGroupDto.fromModel(consumerGroupDao.save(consumerGroup), clientId);
     }
 
-    public Set<Integer> getPartitionsForClient(String groupId, String topic, int clientId) {
-        ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
+    public Set<Integer> getPartitionsForClient(ConsumerGroup consumerGroup, int clientId) {
         Map<Integer, Integer> partitionDistribution = consumerGroup.getClients();
 
         return partitionDistribution.entrySet().stream()
