@@ -1,5 +1,8 @@
 package ru.itmo.broker.api;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +32,16 @@ public class MessageController {
     }
 
     @GetMapping
-    public MessageDto read(@RequestParam("topic") String topic, @RequestParam("groupId") String groupId, @RequestParam("clientId") String clientId) {
-        return consumerService.readMessage();
+    public Optional<MessageDto> read(
+            @RequestParam("topic") String topic,
+            @RequestParam("groupId") String groupId,
+            @RequestParam("clientId") int clientId,
+            @RequestParam("offset") Long offset) {
+        return consumerService.readMessage(topic, groupId, clientId, offset);
+    }
+
+    @PostMapping("/commit")
+    public void commit(@RequestParam("id") String id) {
+        consumerService.commitMessage(UUID.fromString(id));
     }
 }

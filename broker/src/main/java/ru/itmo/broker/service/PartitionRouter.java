@@ -61,13 +61,15 @@ public class PartitionRouter {
         return partitions.get(ThreadLocalRandom.current().nextInt(partitions.size()));
     }
 
-    public Set<Integer> getPartitionsForClient(ConsumerGroup consumerGroup, int clientId) {
+    public int getPartitionForClient(ConsumerGroup consumerGroup, int clientId) {
         Map<Integer, Integer> partitionDistribution = consumerGroup.getClients();
 
-        return partitionDistribution.entrySet().stream()
+         List<Integer> partitions = partitionDistribution.entrySet().stream()
                 .filter(it -> Integer.valueOf(clientId).equals(it.getValue()))
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                .toList();
+
+         return partitions.get(ThreadLocalRandom.current().nextInt(partitions.size()));
     }
 
     private int generateClientId(Map<Integer, Integer> partitionDistribution) {
