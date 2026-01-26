@@ -4,18 +4,20 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
+import lombok.Data;
 
 /**
  * @author erik.karapetyan
  */
-@Getter
+@Data
 public class MessageDto {
 
     @JsonProperty("id")
     private final UUID id;
     @JsonProperty("content")
     private final String content;
+    @JsonProperty("header")
+    private final String header;
     @JsonProperty("partition")
     private final int partition;
     @JsonProperty("msgOffset")
@@ -31,6 +33,8 @@ public class MessageDto {
             UUID id,
             @JsonProperty("content")
             String content,
+            @JsonProperty("header")
+            String header,
             @JsonProperty("partition")
             int partition,
             @JsonProperty("msgOffset")
@@ -42,6 +46,7 @@ public class MessageDto {
     ) {
         this.id = id;
         this.content = content;
+        this.header = header;
         this.partition = partition;
         this.msgOffset = msgOffset;
         this.commited = commited;

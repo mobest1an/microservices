@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     implementation project(':consumer')
+    implementation project(':producer')
     implementation project(':common')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'

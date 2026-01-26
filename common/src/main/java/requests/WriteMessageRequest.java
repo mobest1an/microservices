@@ -1,7 +1,9 @@
 package requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author erik.karapetyan
  */
-public record WriteMessageRequest(String content) {
+public record WriteMessageRequest(@JsonProperty("content") String content) {
 }

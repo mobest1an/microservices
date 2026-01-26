@@ -8,10 +8,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 import ru.itmo.consumer.BrokerApiClient;
 import ru.itmo.consumer.ConsumerManager;
+import ru.itmo.consumer.ConsumerProperties;
 import ru.itmo.consumer.config.BrokerConfigurationProperties;
 import ru.itmo.demo.ConsumerProcessorFactory;
-import ru.itmo.consumer.ConsumerProperties;
-import ru.itmo.demo.DemoConsumer;
 
 /**
  * @author erik.karapetyan
@@ -25,14 +24,9 @@ public class DemoConsumerContextConfiguration {
         return builder.build();
     }
 
-    @Bean
+    @Bean("consumerBrokerApiClient")
     public BrokerApiClient brokerApiClient(RestTemplate restTemplate, BrokerConfigurationProperties brokerConfigurationProperties) {
         return new BrokerApiClient(restTemplate, brokerConfigurationProperties);
-    }
-
-    @Bean
-    public DemoConsumer demoConsumer(BrokerApiClient brokerApiClient) {
-        return new DemoConsumer("topic", "group", brokerApiClient);
     }
 
     @Bean
@@ -42,10 +36,10 @@ public class DemoConsumerContextConfiguration {
 
     @Bean
     public ConsumerProcessorFactory consumerProcessorFactory(
-            BrokerApiClient brokerApiClient,
+            BrokerApiClient consumerBrokerApiClient,
             ConsumerProperties consumerProperties
     ) {
-        return new ConsumerProcessorFactory(brokerApiClient, consumerProperties);
+        return new ConsumerProcessorFactory(consumerBrokerApiClient, consumerProperties);
     }
 
     @Bean

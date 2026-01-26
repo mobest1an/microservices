@@ -36,6 +36,7 @@ public class Message {
         return new MessageDto(
                 this.getId(),
                 this.getContent(),
+                this.getHeader(),
                 this.getPartition(),
                 this.getMsgOffset(),
                 this.isCommited(),
