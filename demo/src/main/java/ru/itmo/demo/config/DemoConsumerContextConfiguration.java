@@ -7,10 +7,10 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 import ru.itmo.consumer.BrokerApiClient;
+import ru.itmo.consumer.ConsumerManager;
 import ru.itmo.consumer.config.BrokerConfigurationProperties;
-import ru.itmo.demo.ConsumerManager;
 import ru.itmo.demo.ConsumerProcessorFactory;
-import ru.itmo.demo.ConsumerProperties;
+import ru.itmo.consumer.ConsumerProperties;
 import ru.itmo.demo.DemoConsumer;
 
 /**

@@ -1,9 +1,11 @@
 package ru.itmo.demo;
 
+import ru.itmo.consumer.AbstractProcessorFactory;
 import ru.itmo.consumer.BrokerApiClient;
+import ru.itmo.consumer.ConsumerProperties;
 import ru.itmo.consumer.QueueProcessorBase;
 
-public class ConsumerProcessorFactory {
+public class ConsumerProcessorFactory extends AbstractProcessorFactory {
 
     private final BrokerApiClient brokerApiClient;
     private final ConsumerProperties consumerProperties;

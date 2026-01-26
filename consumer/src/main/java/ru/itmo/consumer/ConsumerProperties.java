@@ -1,4 +1,4 @@
-package ru.itmo.demo;
+package ru.itmo.consumer;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

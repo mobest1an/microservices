@@ -15,6 +15,6 @@ public class DemoConsumer extends QueueProcessorBase {
 
     @Override
     protected void process(MessageDto data) {
-        System.out.println(data.getContent());
+        System.out.println(data);
     }
 }
