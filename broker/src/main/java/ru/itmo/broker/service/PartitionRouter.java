@@ -12,8 +12,6 @@ import java.util.stream.IntStream;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.model.ConsumerGroup;
 import ru.itmo.broker.model.Topic;
@@ -25,7 +23,6 @@ import ru.itmo.broker.model.Topic;
 @RequiredArgsConstructor
 public class PartitionRouter {
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public int joinConsumerGroup(ConsumerGroup consumerGroup) {
         Map<Integer, Integer> partitionDistribution = consumerGroup.getClients();
 
@@ -36,7 +33,6 @@ public class PartitionRouter {
         return clientId;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void leaveConsumerGroup(ConsumerGroup consumerGroup, int clientId) {
         Map<Integer, Integer> partitionDistribution = consumerGroup.getClients();
 

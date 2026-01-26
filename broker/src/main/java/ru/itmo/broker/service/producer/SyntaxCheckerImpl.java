@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 @Primary
 public class SyntaxCheckerImpl implements SyntaxChecker {
@@ -17,7 +17,7 @@ public class SyntaxCheckerImpl implements SyntaxChecker {
 
     @Override
     @Transactional
-    public String enrich(String content) {
+    public String check(String content) {
         var textResult = chatClient.prompt().user(content).call().content().trim();
         var boolResult = false;
         try {

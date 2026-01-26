@@ -1,4 +1,4 @@
-package ru.itmo.broker.api.dto.requests;
+package requests;
 
 /**
  * @author erik.karapetyan

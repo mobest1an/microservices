@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import responses.MessageDto;
 
 /**
  * @author erik.karapetyan
@@ -22,6 +23,7 @@ public class Message {
     @Id
     private UUID id;
     private String content;
+    private String header;
     private int partition;
     private long msgOffset;
     private boolean commited;
@@ -29,4 +31,15 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "topic_name", nullable = false)
     private Topic topic;
+
+    public MessageDto fromModel() {
+        return new MessageDto(
+                this.getId(),
+                this.getContent(),
+                this.getPartition(),
+                this.getMsgOffset(),
+                this.isCommited(),
+                this.getTopic().getName()
+        );
+    }
 }

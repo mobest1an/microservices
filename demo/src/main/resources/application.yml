@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: demo
+
+broker:
+  groups-base-url: http://localhost:8081/api/v1/groups
+  message-base-url: http://localhost:8081/api/v1/message

@@ -9,10 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itmo.broker.api.dto.responses.MessageDto;
+import responses.MessageDto;
 import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.dao.repository.MessageRepository;
-import ru.itmo.broker.model.ClientOffsetKey;
 import ru.itmo.broker.model.ConsumerGroup;
 import ru.itmo.broker.model.Message;
 import ru.itmo.broker.service.PartitionRouter;
@@ -34,29 +33,32 @@ public class ConsumerService {
         int partition = partitionRouter.getPartitionForClient(consumerGroup, clientId);
         long maxOffset = consumerGroup.getTopic().getOffsets().get(partition);
 
-        Map<ClientOffsetKey, Long> clientOffsets = consumerGroup.getClientOffsets();
+        Map<Integer, Long> clientOffsets = consumerGroup.getClientOffsets();
         if (clientOffsets == null) {
             clientOffsets = new HashMap<>();
         }
 
-        Long msgOffset = clientOffsets.get(new ClientOffsetKey(clientId, partition));
+        Long msgOffset = clientOffsets.get(partition);
         if (msgOffset == null) {
             msgOffset = maxOffset;
         }
 
         Optional<Message> message = messageRepository.findByTopicAndPartitionAndMsgOffset(consumerGroup.getTopic(), partition, msgOffset);
-        if (message.isPresent()) {
-            clientOffsets.put(new ClientOffsetKey(clientId, partition), msgOffset + 1);
-            consumerGroup.setClientOffsets(clientOffsets);
-            consumerGroupDao.save(consumerGroup);
-        }
-        return message.map(MessageDto::fromModel);
+        return message.map(Message::fromModel);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void commitMessage(UUID id) {
+    public void commitMessage(UUID id, String groupId) {
         Message message = messageRepository.findById(id).orElseThrow();
+        ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, message.getTopic());
+
+        Map<Integer, Long> clientOffsets = consumerGroup.getClientOffsets();
+        clientOffsets.put(message.getPartition(), message.getMsgOffset() + 1);
+
+        consumerGroup.setClientOffsets(clientOffsets);
         message.setCommited(true);
+
         messageRepository.save(message);
+        consumerGroupDao.save(consumerGroup);
     }
 }

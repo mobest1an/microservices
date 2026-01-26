@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.itmo.broker.api.dto.responses.ConsumerGroupDto;
+import responses.ConsumerGroupDto;
 import ru.itmo.broker.service.consumer.ConsumerGroupService;
 
 /**

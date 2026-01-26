@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itmo.broker.api.dto.responses.ConsumerGroupDto;
+import responses.ConsumerGroupDto;
 import ru.itmo.broker.dao.ConsumerGroupDao;
 import ru.itmo.broker.dao.TopicDao;
 import ru.itmo.broker.model.ConsumerGroup;
@@ -26,20 +26,20 @@ public class ConsumerGroupService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ConsumerGroupDto create(String groupId, String topicName) {
         Topic topic = topicDao.findById(topicName);
-        return ConsumerGroupDto.fromModel(consumerGroupDao.create(groupId, topic), null);
+        return consumerGroupDao.create(groupId, topic).fromModel(null);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ConsumerGroupDto join(String groupId, String topic) {
         ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
         int clientId = partitionRouter.joinConsumerGroup(consumerGroup);
-        return ConsumerGroupDto.fromModel(consumerGroupDao.save(consumerGroup), clientId);
+        return consumerGroupDao.save(consumerGroup).fromModel(clientId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ConsumerGroupDto leave(String groupId, String topic, int clientId) {
         ConsumerGroup consumerGroup = consumerGroupDao.findByGroupIdAndTopic(groupId, topic);
         partitionRouter.leaveConsumerGroup(consumerGroup, clientId);
-        return ConsumerGroupDto.fromModel(consumerGroupDao.save(consumerGroup), clientId);
+        return consumerGroupDao.save(consumerGroup).fromModel(clientId);
     }
 }

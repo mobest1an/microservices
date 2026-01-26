@@ -10,11 +10,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKeyClass;
 import jakarta.persistence.MapKeyColumn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import responses.ConsumerGroupDto;
 
 /**
  * @author erik.karapetyan
@@ -46,7 +46,16 @@ public class ConsumerGroup {
             name = "client_offsets",
             joinColumns = @JoinColumn(name = "group_id")
     )
-    @MapKeyClass(ClientOffsetKey.class)
+    @MapKeyColumn(name = "partition")
     @Column(name = "client_offset")
-    private Map<ClientOffsetKey, Long> clientOffsets;
+    private Map<Integer, Long> clientOffsets;
+
+    public ConsumerGroupDto fromModel(Integer clientId) {
+        return new ConsumerGroupDto(
+                this.getGroupId(),
+                this.getTopic().getName(),
+                this.getTopic().getPartitionCount(),
+                clientId
+        );
+    }
 }

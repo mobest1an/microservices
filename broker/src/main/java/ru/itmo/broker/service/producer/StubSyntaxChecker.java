@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class StubSyntaxChecker implements SyntaxChecker {
 
     @Override
-    public String enrich(String content) {
+    public String check(String content) {
         return content;
     }
 }

@@ -40,6 +40,10 @@ public class ConsumerGroupDao {
         return consumerGroupRepository.findByGroupIdAndTopic(groupId, topic).orElseThrow();
     }
 
+    public ConsumerGroup findByGroupIdAndTopic(String groupId, Topic topic) {
+        return consumerGroupRepository.findByGroupIdAndTopic(groupId, topic).orElseThrow();
+    }
+
     public ConsumerGroup save(ConsumerGroup consumerGroup) {
         return consumerGroupRepository.save(consumerGroup);
     }

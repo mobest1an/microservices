@@ -5,5 +5,5 @@ package ru.itmo.broker.service.producer;
  */
 public interface SyntaxChecker {
 
-    String enrich(String content);
+    String check(String content);
 }

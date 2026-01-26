@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itmo.broker.api.dto.requests.WriteMessageRequest;
+import requests.WriteMessageRequest;
 import ru.itmo.broker.dao.TopicDao;
 import ru.itmo.broker.dao.repository.MessageRepository;
 import ru.itmo.broker.model.Message;
@@ -33,11 +33,12 @@ public class ProducerService {
         long currentOffset = topic.getOffsets().get(partition) + 1;
         topic.getOffsets().replace(partition, currentOffset);
 
-        String enrichedContent = syntaxChecker.enrich(request.content());
+        String header = syntaxChecker.check(request.content());
 
         Message message = new Message(
                 UUID.randomUUID(),
-                enrichedContent,
+                request.content(),
+                header,
                 partition,
                 currentOffset,
                 false,
