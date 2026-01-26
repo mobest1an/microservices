@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import requests.WriteMessageRequest;
+import responses.MessageDto;
 import ru.itmo.broker.dao.TopicDao;
 import ru.itmo.broker.dao.repository.MessageRepository;
 import ru.itmo.broker.model.Message;
@@ -26,7 +27,7 @@ public class ProducerService {
     private final SyntaxChecker syntaxChecker;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void writeMessage(String topicName, WriteMessageRequest request) {
+    public MessageDto writeMessage(String topicName, WriteMessageRequest request) {
         Topic topic = topicDao.findById(topicName);
         int partition = partitionRouter.getPartitionForProducer(topic);
 
@@ -46,6 +47,6 @@ public class ProducerService {
         );
 
         topicDao.save(topic);
-        messageRepository.save(message);
+        return messageRepository.save(message).fromModel();
     }
 }

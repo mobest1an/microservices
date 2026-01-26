@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +28,8 @@ public class MessageController {
     private final ConsumerService consumerService;
 
     @PostMapping
-    public void write(@RequestParam("topic") String topic, @RequestBody WriteMessageRequest request) {
-        producerService.writeMessage(topic, request);
+    public MessageDto write(@RequestParam("topic") String topic, @RequestBody WriteMessageRequest request) {
+        return producerService.writeMessage(topic, request);
     }
 
     @GetMapping
@@ -42,5 +43,10 @@ public class MessageController {
     @PostMapping("/commit")
     public void commit(@RequestParam("id") String id, @RequestParam("groupId") String groupId) {
         consumerService.commitMessage(UUID.fromString(id), groupId);
+    }
+
+    @GetMapping("/{id}")
+    public Optional<MessageDto> getById(@PathVariable String id) {
+        return consumerService.getById(UUID.fromString(id));
     }
 }

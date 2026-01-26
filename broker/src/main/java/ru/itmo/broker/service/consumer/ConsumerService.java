@@ -61,4 +61,8 @@ public class ConsumerService {
         messageRepository.save(message);
         consumerGroupDao.save(consumerGroup);
     }
+
+    public Optional<MessageDto> getById(UUID id) {
+        return messageRepository.findById(id).map(Message::fromModel);
+    }
 }
